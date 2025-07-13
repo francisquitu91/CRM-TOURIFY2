@@ -198,6 +198,29 @@ export type Database = {
           created_at?: string
         }
       }
+      tours: {
+        Row: {
+          id: string
+          url: string
+          title: string
+          label: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          url: string
+          title: string
+          label: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          url?: string
+          title?: string
+          label?: string
+          created_at?: string
+        }
+      }
     }
   }
 }

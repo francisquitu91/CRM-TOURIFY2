@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { Prospect, SalesScript, Transaction, Task, Goal, CalendarEvent } from '../types';
+import { Prospect, SalesScript, Transaction, Task, Goal, CalendarEvent, Tour } from '../types';
 
 // Prospects
 export const getProspects = async (): Promise<Prospect[]> => {
@@ -601,6 +601,85 @@ export const deleteCalendarEvent = async (id: number): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Error deleting calendar event:', error);
+    return false;
+  }
+};
+
+// Tours
+export const getTours = async (): Promise<Tour[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('tours')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching tours:', error);
+    return [];
+  }
+};
+
+export const addTour = async (tour: Omit<Tour, 'id' | 'created_at'>): Promise<Tour | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('tours')
+      .insert({
+        url: tour.url,
+        title: tour.title,
+        label: tour.label
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id: data.id,
+      url: data.url,
+      title: data.title,
+      label: data.label,
+      created_at: data.created_at
+    };
+  } catch (error) {
+    console.error('Error adding tour:', error);
+    return null;
+  }
+};
+
+export const updateTour = async (id: string, tour: Partial<Tour>): Promise<boolean> => {
+  try {
+    const updateData: any = {};
+    if (tour.url) updateData.url = tour.url;
+    if (tour.title) updateData.title = tour.title;
+    if (tour.label) updateData.label = tour.label;
+
+    const { error } = await supabase
+      .from('tours')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error updating tour:', error);
+    return false;
+  }
+};
+
+export const deleteTour = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('tours')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting tour:', error);
     return false;
   }
 };

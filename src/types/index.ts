@@ -67,3 +67,11 @@ export interface CalendarEvent {
   description?: string;
   related?: string;
 }
+
+export interface Tour {
+  id: string;
+  url: string;
+  title: string;
+  label: string;
+  created_at: string;
+}
