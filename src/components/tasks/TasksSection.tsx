@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, CheckSquare, Calendar, User, Flag } from 'lucide-react';
 import { Task, Goal, User as UserType } from '../../types';
-import { getTasks, setTasks, getGoals, setGoals } from '../../utils/storage';
+import { getTasks, setTasks, getGoals, setGoals, addTask, updateTask, deleteTask, addGoal, updateGoal, deleteGoal } from '../../utils/storage';
 import { USERS_LIST, PRIORITIES } from '../../utils/constants';
 import { TaskForm } from './TaskForm';
 import { GoalForm } from './GoalForm';
