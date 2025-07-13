@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, TrendingUp, TrendingDown, DollarSign, Calendar, Filter, Download } from 'lucide-react';
 import { Transaction } from '../../types';
-import { getTransactions, setTransactions } from '../../utils/storage';
+import { getTransactions, setTransactions, addTransaction, updateTransaction, deleteTransaction } from '../../utils/storage';
 import { TRANSACTION_CATEGORIES, MONTHLY_TARGET } from '../../utils/constants';
 import { TransactionForm } from './TransactionForm';
 import { FinancialCharts } from './FinancialCharts';
