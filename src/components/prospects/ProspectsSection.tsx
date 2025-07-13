@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Users, Phone, Mail, Building, Tag, Calendar, Edit, Trash2, Eye } from 'lucide-react';
 import { Prospect, User } from '../../types';
-import { getProspects, setProspects } from '../../utils/storage';
+import { getProspects, setProspects, addProspect, updateProspect, deleteProspect } from '../../utils/storage';
 import { SERVICES, PROSPECT_STATUSES, USERS_LIST, TAGS } from '../../utils/constants';
 import { ProspectForm } from './ProspectForm';
 import { ProspectKanban } from './ProspectKanban';
