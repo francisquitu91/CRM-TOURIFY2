@@ -4,12 +4,19 @@ import { Prospect, SalesScript, Transaction, Task, Goal, CalendarEvent } from '.
 // Prospects
 export const getProspects = async (): Promise<Prospect[]> => {
   try {
+    if (!supabase) {
+      console.error('Supabase client not initialized');
+      return [];
+    }
+
     const { data, error } = await supabase
       .from('prospects')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+
+    if (!data) return [];
 
     return data.map(item => ({
       id: item.id,
