@@ -25,13 +25,23 @@ export const ProspectsSection: React.FC<ProspectsSectionProps> = ({ user }) => {
   const [selectedProspect, setSelectedProspect] = useState<Prospect | null>(null);
 
   useEffect(() => {
-    const loadedProspects = getProspects();
-    setProspectsState(loadedProspects);
-    setFilteredProspects(loadedProspects);
+    const loadProspects = async () => {
+      try {
+        const loadedProspects = await getProspects();
+        setProspectsState(loadedProspects || []);
+        setFilteredProspects(loadedProspects || []);
+      } catch (error) {
+        console.error('Error loading prospects:', error);
+        setProspectsState([]);
+        setFilteredProspects([]);
+      }
+    };
+    
+    loadProspects();
   }, []);
 
   useEffect(() => {
-    let filtered = prospects;
+    let filtered = Array.isArray(prospects) ? prospects : [];
 
     if (searchTerm) {
       filtered = filtered.filter(p => 
@@ -61,42 +71,65 @@ export const ProspectsSection: React.FC<ProspectsSectionProps> = ({ user }) => {
   }, [prospects, searchTerm, statusFilter, serviceFilter, assignedFilter, tagFilter]);
 
   const handleSaveProspect = (prospectData: Omit<Prospect, 'id' | 'createdAt'>) => {
-    if (editingProspect) {
-      const updatedProspects = prospects.map(p => 
-        p.id === editingProspect.id 
-          ? { ...prospectData, id: editingProspect.id, createdAt: editingProspect.createdAt }
-          : p
-      );
-      setProspectsState(updatedProspects);
-      setProspects(updatedProspects);
-    } else {
-      const newProspect: Prospect = {
-        ...prospectData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
-      };
-      const updatedProspects = [...prospects, newProspect];
-      setProspectsState(updatedProspects);
-      setProspects(updatedProspects);
-    }
+    const saveProspect = async () => {
+      try {
+        if (editingProspect) {
+          await updateProspect(editingProspect.id, prospectData);
+        } else {
+          await addProspect(prospectData);
+        }
+        
+        // Reload prospects after save
+        const updatedProspects = await getProspects();
+        setProspectsState(updatedProspects || []);
+        setFilteredProspects(updatedProspects || []);
+      } catch (error) {
+        console.error('Error saving prospect:', error);
+      }
+    };
+    
+    saveProspect();
     setShowForm(false);
     setEditingProspect(null);
   };
 
   const handleDeleteProspect = (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar este prospecto?')) {
-      const updatedProspects = prospects.filter(p => p.id !== id);
-      setProspectsState(updatedProspects);
-      setProspects(updatedProspects);
+      const deleteProspectAsync = async () => {
+        try {
+          await deleteProspect(id);
+          
+          // Reload prospects after delete
+          const updatedProspects = await getProspects();
+          setProspectsState(updatedProspects || []);
+          setFilteredProspects(updatedProspects || []);
+        } catch (error) {
+          console.error('Error deleting prospect:', error);
+        }
+      };
+      
+      deleteProspectAsync();
     }
   };
 
   const handleStatusChange = (prospectId: string, newStatus: string) => {
-    const updatedProspects = prospects.map(p => 
-      p.id === prospectId ? { ...p, status: newStatus } : p
-    );
-    setProspectsState(updatedProspects);
-    setProspects(updatedProspects);
+    const updateStatus = async () => {
+      try {
+        const prospect = prospects.find(p => p.id === prospectId);
+        if (prospect) {
+          await updateProspect(prospectId, { ...prospect, status: newStatus });
+          
+          // Reload prospects after update
+          const updatedProspects = await getProspects();
+          setProspectsState(updatedProspects || []);
+          setFilteredProspects(updatedProspects || []);
+        }
+      } catch (error) {
+        console.error('Error updating prospect status:', error);
+      }
+    };
+    
+    updateStatus();
   };
 
   const getStatusColor = (status: string) => {
@@ -131,12 +164,21 @@ export const ProspectsSection: React.FC<ProspectsSectionProps> = ({ user }) => {
         }}
         onDelete={handleDeleteProspect}
         onSave={(updatedProspect) => {
-          const updatedProspects = prospects.map(p => 
-            p.id === updatedProspect.id ? updatedProspect : p
-          );
-          setProspectsState(updatedProspects);
-          setProspects(updatedProspects);
-          setSelectedProspect(updatedProspect);
+          const saveUpdatedProspect = async () => {
+            try {
+              await updateProspect(updatedProspect.id, updatedProspect);
+              
+              // Reload prospects after update
+              const updatedProspects = await getProspects();
+              setProspectsState(updatedProspects || []);
+              setFilteredProspects(updatedProspects || []);
+              setSelectedProspect(updatedProspect);
+            } catch (error) {
+              console.error('Error updating prospect:', error);
+            }
+          };
+          
+          saveUpdatedProspect();
         }}
       />
     );
