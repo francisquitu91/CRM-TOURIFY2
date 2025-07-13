@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Copy, Edit, Trash2, FileText, Check, Filter } from 'lucide-react';
 import { SalesScript } from '../../types';
-import { getSalesScripts, setSalesScripts } from '../../utils/storage';
+import { getSalesScripts, setSalesScripts, addSalesScript, updateSalesScript, deleteSalesScript } from '../../utils/storage';
 import { CLIENT_TYPES } from '../../utils/constants';
 import { ScriptForm } from './ScriptForm';
 
